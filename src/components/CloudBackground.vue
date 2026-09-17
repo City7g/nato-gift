@@ -1,7 +1,7 @@
 <template>
   <div class="cloud-background">
     <div class="cloud-background__stage">
-      <svg
+      <!-- <svg
         class="cloud-background__shape"
         viewBox="0 0 400 640"
         preserveAspectRatio="none"
@@ -18,7 +18,7 @@
           <ellipse cx="290" cy="508" rx="100" ry="76" />
           <ellipse cx="200" cy="572" rx="124" ry="58" />
         </g>
-      </svg>
+      </svg> -->
 
       <div class="cloud-background__content">
         <slot />

@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 import CloudBackground from './components/CloudBackground.vue'
+import HeartsCanvas from './components/HeartsCanvas.vue'
 import PrimaryButton from './components/PrimaryButton.vue'
 import SecondaryButton from './components/SecondaryButton.vue'
 import catsImg from './assets/cats.png'
 
 const accepted = ref(false)
+const heartsCanvas = useTemplateRef<{ burst: (x: number, y: number) => void }>('heartsCanvas')
 
-function accept() {
+function accept(event: MouseEvent) {
   accepted.value = true
+  heartsCanvas.value?.burst(event.clientX, event.clientY)
 }
 </script>
 
 <template>
+  <HeartsCanvas ref="heartsCanvas" />
   <CloudBackground>
     <div class="invite">
       <img class="invite__cats" :src="catsImg" width="280" height="280" alt="Рыжий и белый котики" />
