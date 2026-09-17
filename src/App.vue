@@ -4,12 +4,13 @@ import CloudBackground from './components/CloudBackground.vue'
 import HeartsCanvas from './components/HeartsCanvas.vue'
 import PrimaryButton from './components/PrimaryButton.vue'
 import SecondaryButton from './components/SecondaryButton.vue'
-import catsImg from './assets/cats.png'
+import CatsGift from './components/CatsGift.vue'
 
 const accepted = ref(false)
 const heartsCanvas = useTemplateRef<{ burst: (x: number, y: number) => void }>('heartsCanvas')
 
 function accept(event: MouseEvent) {
+
   accepted.value = true
   heartsCanvas.value?.burst(event.clientX, event.clientY)
 }
@@ -19,7 +20,7 @@ function accept(event: MouseEvent) {
   <HeartsCanvas ref="heartsCanvas" />
   <CloudBackground>
     <div class="invite">
-      <img class="invite__cats" :src="catsImg" width="280" height="280" alt="Рыжий и белый котики" />
+      <CatsGift />
 
       <h1 class="invite__title">
         <template v-if="accepted">я так и знала 💕</template>
@@ -40,15 +41,6 @@ function accept(event: MouseEvent) {
   flex-direction: column;
   align-items: center;
   text-align: center;
-}
-
-.invite__cats {
-  width: min(300px, 86%);
-  height: auto;
-  margin-bottom: 4px;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  user-select: none;
 }
 
 .invite__title {
