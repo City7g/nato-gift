@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import WavyBackground from './WavyBackground.vue'
+import HeartBackground from './HeartBackground.vue'
 
 const modules = import.meta.glob('../assets/cats-frame-*.png', {
   eager: true,
@@ -37,7 +38,8 @@ onUnmounted(() => {
 
 <template>
   <div class="cats-gift" role="img" aria-label="Рыжий кот достаёт конфету и протягивает её белому коту">
-    <WavyBackground />
+    <!-- <WavyBackground /> -->
+    <HeartBackground />
     <img v-for="(frame, index) in frames" :key="frame" class="cats-gift__frame"
       :class="{ 'cats-gift__frame--active': index === frameIndex }" :src="frame" width="280" height="280" alt="" />
   </div>
