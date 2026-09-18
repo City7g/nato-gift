@@ -1,12 +1,7 @@
 <template>
   <div class="cloud-background">
     <div class="cloud-background__stage">
-      <!-- <svg
-        class="cloud-background__shape"
-        viewBox="0 0 400 640"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
+      <!-- <svg class="cloud-background__shape" viewBox="0 0 400 640" preserveAspectRatio="none" aria-hidden="true">
         <g fill="#ffffff" fill-opacity="0.55">
           <ellipse cx="200" cy="320" rx="152" ry="248" />
           <ellipse cx="200" cy="78" rx="118" ry="62" />
