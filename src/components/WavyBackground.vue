@@ -1,128 +1,26 @@
-<script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
-
-const WAVE_EASE = 0.36
-
-const {
-  waves = 4,
-  inset = 30,
-  radius = 18,
-} = defineProps<{
-  waves?: number
-  inset?: number
-  radius?: number
-}>()
-
-const rootEl = useTemplateRef<HTMLElement>('root')
-const box = ref({ w: 0, h: 0 })
-
-let resizeObserver: ResizeObserver | undefined
-
-function fmt(value: number) {
-  return value.toFixed(2)
-}
-
-function wavyEdge(
-  x0: number,
-  y0: number,
-  x1: number,
-  y1: number,
-  insetX: number,
-  insetY: number,
-) {
-  const dx = x1 - x0
-  const dy = y1 - y0
-  const hx = (dx / waves / 2) * WAVE_EASE
-  const hy = (dy / waves / 2) * WAVE_EASE
-  const parts: string[] = []
-
-  for (let i = 0; i < waves; i += 1) {
-    const t0 = i / waves
-    const t1 = (i + 1) / waves
-    const tm = (t0 + t1) / 2
-    const sx = x0 + dx * t0
-    const sy = y0 + dy * t0
-    const mx = x0 + dx * tm + insetX
-    const my = y0 + dy * tm + insetY
-    const ex = x0 + dx * t1
-    const ey = y0 + dy * t1
-
-    parts.push(
-      `C ${fmt(sx + hx)} ${fmt(sy + hy)}, ${fmt(mx - hx)} ${fmt(my - hy)}, ${fmt(mx)} ${fmt(my)}`,
-      `C ${fmt(mx + hx)} ${fmt(my + hy)}, ${fmt(ex - hx)} ${fmt(ey - hy)}, ${fmt(ex)} ${fmt(ey)}`,
-    )
-  }
-
-  return parts.join(' ')
-}
-
-const wavePath = computed(() => {
-  const { w, h } = box.value
-  if (w < 1 || h < 1) return ''
-
-  const a = Math.min(inset, w / 4, h / 4)
-  const r = Math.min(radius, w / 8, h / 8)
-
-  return [
-    `M ${fmt(r)} 0`,
-    wavyEdge(r, 0, w - r, 0, 0, a),
-    `A ${fmt(r)} ${fmt(r)} 0 0 1 ${fmt(w)} ${fmt(r)}`,
-    wavyEdge(w, r, w, h - r, -a, 0),
-    `A ${fmt(r)} ${fmt(r)} 0 0 1 ${fmt(w - r)} ${fmt(h)}`,
-    wavyEdge(w - r, h, r, h, 0, -a),
-    `A ${fmt(r)} ${fmt(r)} 0 0 1 0 ${fmt(h - r)}`,
-    wavyEdge(0, h - r, 0, r, a, 0),
-    `A ${fmt(r)} ${fmt(r)} 0 0 1 ${fmt(r)} 0`,
-    'Z',
-  ].join(' ')
-})
-
-onMounted(() => {
-  if (!rootEl.value) return
-
-  resizeObserver = new ResizeObserver(([entry]) => {
-    const { width, height } = entry.contentRect
-    box.value = { w: width, h: height }
-  })
-  resizeObserver.observe(rootEl.value)
-})
-
-onUnmounted(() => {
-  resizeObserver?.disconnect()
-})
-</script>
-
 <template>
-  <div ref="root" class="wavy-background" aria-hidden="true">
-    <svg
-      v-if="wavePath"
-      class="wavy-background__svg"
-      :viewBox="`0 0 ${box.w} ${box.h}`"
-      preserveAspectRatio="none"
-    >
-      <path class="wavy-background__shape" :d="wavePath" />
-    </svg>
-  </div>
+  <svg class="wavy-background" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <path class="wavy-background__shape"
+      d="M6 0C10 0 13 8 17 8S24 0 28 0 35 8 39 8 46 0 50 0 57 8 61 8 68 0 72 0 79 8 83 8 90 0 94 0A6 6 0 0 1 100 6C100 10 92 13 92 17S100 24 100 28 92 35 92 39 100 46 100 50 92 57 92 61 100 68 100 72 92 79 92 83 100 90 100 94A6 6 0 0 1 94 100C90 100 87 92 83 92S76 100 72 100 65 92 61 92 54 100 50 100 43 92 39 92 32 100 28 100 21 92 17 92 10 100 6 100A6 6 0 0 1 0 94C0 90 8 87 8 83S0 76 0 72 8 65 8 61 0 54 0 50 8 43 8 39 0 32 0 28 8 21 8 17 0 10 0 6A6 6 0 0 1 6 0Z" />
+  </svg>
 </template>
 
 <style scoped lang="scss">
 .wavy-background {
   position: absolute;
   inset: 0;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.wavy-background__svg {
   width: 100%;
   height: 100%;
   overflow: visible;
+  pointer-events: none;
 }
 
 .wavy-background__shape {
   fill: #fff;
   stroke: #f3c1ce;
   stroke-width: 2;
+  stroke-linecap: round;
   stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 </style>
