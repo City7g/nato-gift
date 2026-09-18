@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
+import WavyBackground from './WavyBackground.vue'
 
 const modules = import.meta.glob('../assets/cats-frame-*.png', {
   eager: true,
@@ -36,6 +37,7 @@ onUnmounted(() => {
 
 <template>
   <div class="cats-gift" role="img" aria-label="Рыжий кот достаёт конфету и протягивает её белому коту">
+    <WavyBackground />
     <img v-for="(frame, index) in frames" :key="frame" class="cats-gift__frame"
       :class="{ 'cats-gift__frame--active': index === frameIndex }" :src="frame" width="280" height="280" alt="" />
   </div>
@@ -44,22 +46,18 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .cats-gift {
   position: relative;
-  width: min(300px, 86%);
-  aspect-ratio: 1;
-  margin-bottom: 4px;
-  // pointer-events: none;
-  // user-select: none;
+  overflow: visible;
 }
 
 .cats-gift__frame {
   position: absolute;
   inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: contain;
   opacity: 0;
   visibility: hidden;
-  // mix-blend-mode: multiply;
 }
 
 .cats-gift__frame--active {
