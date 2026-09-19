@@ -4,6 +4,7 @@ import HeartsCanvas from './components/HeartsCanvas.vue'
 import PrimaryButton from './components/PrimaryButton.vue'
 import SecondaryButton from './components/SecondaryButton.vue'
 import CatsGift from './components/CatsGift.vue'
+import { sendInvite, sendInviteAccept } from './api/invite'
 import gsap from 'gsap'
 
 const step = ref<'invite' | 'accepted'>('invite')
@@ -13,14 +14,24 @@ const heartsCanvas = useTemplateRef<{ burst: (x: number, y: number) => void }>('
 
 const contentEl = useTemplateRef<HTMLDivElement>('content')
 
-function accept(event: MouseEvent) {
+// onMounted(() => {
+//   sendInvite()
+// })
+
+async function accept(event: MouseEvent) {
+  if (accepted.value) return
+
   accepted.value = true
   heartsCanvas.value?.burst(event.clientX, event.clientY)
+
+  try {
+    await sendInviteAccept()
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 onMounted(() => {
-  console.log(contentEl.value);
-
   const items = contentEl.value?.querySelectorAll('.invite__title, .invite__button')
   if (!items?.length) return
   gsap.from(items, {
@@ -81,7 +92,9 @@ onMounted(() => {
   grid-template-columns: 1fr;
   grid-template-rows: repeat(2, calc(50svh - 110px));
   justify-content: center;
+  // justify-items: center;
   align-content: center;
+  align-items: center;
   gap: 10px;
   height: calc(100svh - 80px);
 
