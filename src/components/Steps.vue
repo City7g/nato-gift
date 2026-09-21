@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import PrimaryButton from './PrimaryButton.vue'
 import SecondaryButton from './SecondaryButton.vue'
 import type { StepButton, StepConfig } from '../lib/steps'
+import { sendStep } from '../api/invite.ts'
 
 const { steps } = defineProps<{
   steps: StepConfig[]
@@ -26,6 +27,7 @@ const current = computed(() => stepsById.value.get(currentId.value) ?? steps[0])
 watch(
   () => current.value?.step,
   () => {
+    console.log('current.value?.step', current.value?.step)
     const count = current.value?.buttons?.length ?? 0
     decorateClicks.value = Array.from({ length: count }, () => 0)
     decorateOffsets.value = Array.from({ length: count }, () => ({ x: 0, y: 0 }))
@@ -38,13 +40,13 @@ function isPrimary(button: StepButton, index: number) {
 }
 
 function buttonLabel(button: StepButton, index: number) {
-  if (!Array.isArray(button.text)) return button.text
+  if (!button.decorate) return button.text
   const clicks = decorateClicks.value[index] ?? 0
   return button.text[Math.min(clicks, button.text.length - 1)] ?? ''
 }
 
 function isButtonVisible(button: StepButton, index: number) {
-  if (!button.decorate || !Array.isArray(button.text)) return true
+  if (!button.decorate) return true
   return (decorateClicks.value[index] ?? 0) < button.text.length
 }
 
@@ -84,6 +86,8 @@ async function goToStep(nextId: string) {
 }
 
 function onButtonClick(button: StepButton, index: number) {
+  sendStep(current.value?.step ?? '', button.text)
+
   if (button.decorate) {
     decorateClicks.value[index] = (decorateClicks.value[index] ?? 0) + 1
     dodge(index)
@@ -131,12 +135,8 @@ onMounted(() => {
       <p v-if="current.subtitle" class="steps__subtitle">{{ current.subtitle }}</p>
       <div v-if="current.buttons?.length" class="steps__actions">
         <template v-for="(button, index) in current.buttons" :key="index">
-          <div
-            v-if="isButtonVisible(button, index)"
-            class="steps__button"
-            :class="{ 'steps__button--flee': button.decorate }"
-            :style="decorateStyle(button, index)"
-          >
+          <div v-if="isButtonVisible(button, index)" class="steps__button"
+            :class="{ 'steps__button--flee': button.decorate }" :style="decorateStyle(button, index)">
             <PrimaryButton v-if="isPrimary(button, index)" @click="onButtonClick(button, index)">
               {{ buttonLabel(button, index) }}
             </PrimaryButton>
@@ -175,6 +175,7 @@ onMounted(() => {
   font-weight: 700;
   line-height: 1.35;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 .steps__stage {

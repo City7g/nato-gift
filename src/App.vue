@@ -3,7 +3,7 @@ import { onMounted, ref, useTemplateRef } from 'vue'
 import HeartsCanvas from './components/HeartsCanvas.vue'
 import CatsGift from './components/CatsGift.vue'
 import Steps from './components/Steps.vue'
-import { sendInvite, sendInviteAccept } from './api/invite'
+import { sendEnter, sendStep, sendEnd } from './api/invite'
 import { preloadCatFrames } from './lib/catsFrames'
 import { hidePreloader, wait } from './lib/preloader'
 import { steps } from './lib/steps'
@@ -20,13 +20,15 @@ async function celebrate() {
   heartsCanvas.value?.burst(window.innerWidth / 2, window.innerHeight / 2)
 
   try {
-    await sendInviteAccept()
+    await sendEnd()
   } catch (error) {
     console.error(error)
   }
 }
 
 onMounted(async () => {
+  await sendEnter()
+
   if (document.getElementById('preloader')) {
     await Promise.all([document.fonts.ready, preloadCatFrames()])
     await wait(1000)
@@ -34,9 +36,6 @@ onMounted(async () => {
   }
 
   isReady.value = true
-  void sendInvite().catch((error) => {
-    console.error(error)
-  })
 })
 </script>
 
@@ -73,6 +72,7 @@ onMounted(async () => {
 .invite__content {
   max-width: 100%;
   max-height: 100%;
-  aspect-ratio: 1;
+  height: 100%;
+  width: 100%;
 }
 </style>

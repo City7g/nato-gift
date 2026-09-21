@@ -10,12 +10,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <button
-    class="primary-button"
-    :type="type"
-    :disabled="disabled"
-    @click="emit('click', $event)"
-  >
+  <button class="primary-button" :type="type" :disabled="disabled" @click="emit('click', $event)">
     <slot />
   </button>
 </template>
@@ -41,6 +36,7 @@ const emit = defineEmits<{
   line-height: 1;
   letter-spacing: 0.02em;
   cursor: pointer;
+  white-space: nowrap;
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,

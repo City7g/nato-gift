@@ -1,6 +1,14 @@
 {
   "steps": [
     {
+      "step": "hello",
+      "text": "Доброе утро, принцесса",
+      "buttons": [
+        { "text": "Доброе утро!", "route": "intro" },
+        { "text": "Хм...", "route": "intro" }
+      ]
+    },
+    {
       "step": "intro",
       "text": "У меня к тебе один вопрос",
       "buttons": [
@@ -11,40 +19,49 @@
     {
       "step": "reassure",
       "text": "Ничего страшного. Всё равно спрошу",
-      "buttons": [
-        { "text": "Ну давай", "route": "hint" }
-      ]
+      "buttons": [{ "text": "Ну давай", "route": "hint" }]
     },
     {
       "step": "hint",
-      "text": "Они уже всё решили за нас",
+      "text": "Сегодня нам 4 месяца. Да, я сам в шоке",
       "buttons": [
-        { "text": "И что дальше?", "route": "invite" }
+        { "text": "Я тоже", "route": "quote" },
+        { "text": "Уже 4?", "route": "quote" }
       ]
     },
     {
-      "step": "invite",
-      "text": "Пойдёшь со мной на свидание?",
+      "step": "quote",
+      "text": "Говорят, после 4 месяцев начинается самое интересное",
       "buttons": [
-        { "text": "Да", "route": "promise" },
+        { "text": "Продолжай", "route": "beforeGift" },
         {
-          "text": ["Нет", "Кнопка сломалась", "Она декоративная"],
-          "decorate": true
+          "text": "Ну-ну",
+          "route": "beforeGift"
         }
       ]
     },
     {
-      "step": "promise",
-      "text": "Это будет лучший твой день",
+      "step": "beforeGift",
+      "text": "И ещё...",
+      "buttons": [{ "text": "И что же?", "route": "gift" }]
+    },
+    {
+      "step": "gift",
+      "text": "У для тебя подарок",
+      "buttons": [{ "text": "Ну где он?", "route": "afterGift" }]
+    },
+    {
+      "step": "afterGift",
+      "text": "Интересно узнать какой???",
       "buttons": [
-        { "text": "Верю", "route": "finale" },
-        { "text": "Докажи", "route": "finale" }
+        { "text": "Безумно", "route": "finale" },
+        { "text": ["Не-а", "Да ну", "Эта кнопка нерабочая)"], "route": "finale", "decorate": true }
       ]
     },
     {
       "step": "finale",
-      "text": "Я так и знал",
-      "subtitle": "Тогда договорились",
+      "text": "Лежит в тумбочке у кровати",
+      "subtitle": "Правый ящик. Иди скорее",
       "celebrate": true
     }
   ]

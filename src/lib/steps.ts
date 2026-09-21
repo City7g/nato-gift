@@ -1,10 +1,16 @@
 import ru from '../locales/ru.json'
 
-export type StepButton = {
-  text: string | string[]
-  route?: string
-  decorate?: boolean
-}
+export type StepButton =
+  | {
+      text: string
+      route?: string
+      decorate?: false
+    }
+  | {
+      text: string[]
+      route?: string
+      decorate: true
+    }
 
 export type StepConfig = {
   step: string
