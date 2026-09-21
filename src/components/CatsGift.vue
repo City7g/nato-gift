@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import WavyBackground from './WavyBackground.vue'
+// import WavyBackground from './WavyBackground.vue'
 import HeartBackground from './HeartBackground.vue'
 import { catFrames as frames } from '../lib/catsFrames'
 
@@ -51,11 +51,10 @@ onUnmounted(() => {
   height: 100%;
   object-fit: contain;
   opacity: 0;
-  visibility: hidden;
 }
 
 .cats-gift__frame--active {
+  z-index: 2;
   opacity: 1;
-  visibility: visible;
 }
 </style>
