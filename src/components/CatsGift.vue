@@ -2,15 +2,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import WavyBackground from './WavyBackground.vue'
 import HeartBackground from './HeartBackground.vue'
-
-const modules = import.meta.glob('../assets/cats-frame-*.png', {
-  eager: true,
-  import: 'default',
-}) as Record<string, string>
-
-const frames = Object.keys(modules)
-  .sort((a, b) => Number(a.match(/(\d+)\.png$/)?.[1]) - Number(b.match(/(\d+)\.png$/)?.[1]))
-  .map((path) => modules[path])
+import { catFrames as frames } from '../lib/catsFrames'
 
 const delays = frames.map((_, index) => (index === frames.length - 1 ? 1000 : 150))
 const frameIndex = ref(0)

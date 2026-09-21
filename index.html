@@ -11,8 +11,88 @@
       rel="stylesheet"
     />
     <title>nato</title>
+    <style>
+      .preloader {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        place-items: center;
+        background: #fff7f9;
+        transition: opacity 0.45s ease;
+      }
+
+      .preloader--leave {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .preloader__label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      }
+
+      .preloader__heart {
+        width: min(19vmin, 133px);
+        height: min(19vmin, 133px);
+        overflow: visible;
+        transform-origin: 50% 50%;
+        animation: preloader-beat 1.15s ease-in-out infinite;
+      }
+
+      .preloader__heart-shape {
+        fill: #ff2d4f;
+        stroke: #d61f3c;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        vector-effect: non-scaling-stroke;
+      }
+
+      @keyframes preloader-beat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+
+        14% {
+          transform: scale(1.1);
+        }
+
+        28% {
+          transform: scale(1);
+        }
+
+        42% {
+          transform: scale(1.06);
+        }
+
+        56% {
+          transform: scale(1);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .preloader__heart {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="preloader" class="preloader" role="status" aria-live="polite" aria-busy="true">
+      <span class="preloader__label">Загрузка</span>
+      <svg class="preloader__heart" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <path
+          class="preloader__heart-shape"
+          d="M50 94C22 76 4 58 4 36C4 20 16 8 32 8C41 8 47 13 50 22C53 13 59 8 68 8C84 8 96 20 96 36C96 58 78 76 50 94Z"
+        />
+      </svg>
+    </div>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
