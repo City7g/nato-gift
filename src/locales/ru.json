@@ -1,33 +1,51 @@
 {
-  "steps": {
-    "intro": {
-      "title": "У меня к тебе один вопрос",
-      "primary": "Какой?",
-      "secondary": "Боюсь"
+  "steps": [
+    {
+      "step": "intro",
+      "text": "У меня к тебе один вопрос",
+      "buttons": [
+        { "text": "Какой?", "route": "hint" },
+        { "text": "Боюсь", "route": "reassure" }
+      ]
     },
-    "reassure": {
-      "title": "Ничего страшного. Всё равно спрошу",
-      "primary": "Ну давай"
+    {
+      "step": "reassure",
+      "text": "Ничего страшного. Всё равно спрошу",
+      "buttons": [
+        { "text": "Ну давай", "route": "hint" }
+      ]
     },
-    "hint": {
-      "title": "Они уже всё решили за нас",
-      "primary": "И что дальше?"
+    {
+      "step": "hint",
+      "text": "Они уже всё решили за нас",
+      "buttons": [
+        { "text": "И что дальше?", "route": "invite" }
+      ]
     },
-    "invite": {
-      "title": "Пойдёшь со мной на свидание?",
-      "primary": "Да",
-      "secondary": "Нет",
-      "broken": "Кнопка сломалась",
-      "decorative": "Она декоративная"
+    {
+      "step": "invite",
+      "text": "Пойдёшь со мной на свидание?",
+      "buttons": [
+        { "text": "Да", "route": "promise" },
+        {
+          "text": ["Нет", "Кнопка сломалась", "Она декоративная"],
+          "decorate": true
+        }
+      ]
     },
-    "promise": {
-      "title": "Это будет лучший твой день",
-      "primary": "Верю",
-      "secondary": "Докажи"
+    {
+      "step": "promise",
+      "text": "Это будет лучший твой день",
+      "buttons": [
+        { "text": "Верю", "route": "finale" },
+        { "text": "Докажи", "route": "finale" }
+      ]
     },
-    "finale": {
-      "title": "Я так и знал",
-      "subtitle": "Тогда договорились"
+    {
+      "step": "finale",
+      "text": "Я так и знал",
+      "subtitle": "Тогда договорились",
+      "celebrate": true
     }
-  }
+  ]
 }
