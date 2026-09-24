@@ -4,7 +4,7 @@ import gsap from 'gsap'
 import PrimaryButton from './PrimaryButton.vue'
 import SecondaryButton from './SecondaryButton.vue'
 import type { StepButton, StepConfig } from '../lib/steps'
-import { sendStep } from '../api/invite.ts'
+import { sendEnd, sendEnter, sendStep } from '../api/invite.ts'
 
 const { steps } = defineProps<{
   steps: StepConfig[]
@@ -79,7 +79,15 @@ async function goToStep(nextId: string) {
     await nextTick()
     await animShow()
 
-    if (next.celebrate) emit('celebrate')
+    if (!next.celebrate) return
+
+    try {
+      await sendEnd()
+    } catch (error) {
+      console.error(error)
+    }
+
+    emit('celebrate')
   } finally {
     isTransitioning = false
   }
@@ -123,7 +131,9 @@ const animHide = async () => {
   })
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await sendEnter()
+
   void animShow()
 })
 </script>
@@ -132,7 +142,9 @@ onMounted(() => {
   <div v-if="current" ref="root" class="steps">
     <div :key="current.step" class="steps__stage">
       <h1 class="steps__title">{{ current.text }}</h1>
+
       <p v-if="current.subtitle" class="steps__subtitle">{{ current.subtitle }}</p>
+
       <div v-if="current.buttons?.length" class="steps__actions">
         <template v-for="(button, index) in current.buttons" :key="index">
           <div v-if="isButtonVisible(button, index)" class="steps__button"
@@ -140,6 +152,7 @@ onMounted(() => {
             <PrimaryButton v-if="isPrimary(button, index)" @click="onButtonClick(button, index)">
               {{ buttonLabel(button, index) }}
             </PrimaryButton>
+
             <SecondaryButton v-else @click="onButtonClick(button, index)">
               {{ buttonLabel(button, index) }}
             </SecondaryButton>

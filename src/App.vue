@@ -18,17 +18,9 @@ async function celebrate() {
 
   accepted.value = true
   heartsCanvas.value?.burst(window.innerWidth / 2, window.innerHeight / 2)
-
-  try {
-    await sendEnd()
-  } catch (error) {
-    console.error(error)
-  }
 }
 
 onMounted(async () => {
-  await sendEnter()
-
   if (document.getElementById('preloader')) {
     await Promise.all([document.fonts.ready, preloadCatFrames()])
     await wait(1000)
