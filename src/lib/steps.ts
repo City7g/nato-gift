@@ -1,5 +1,3 @@
-import ru from '../locales/ru.json'
-
 export type StepButton =
   | {
       text: string
@@ -17,7 +15,10 @@ export type StepConfig = {
   text: string
   subtitle?: string
   celebrate?: boolean
+  enabled?: boolean
   buttons?: StepButton[]
 }
 
-export const steps = ru.steps as StepConfig[]
+export function isStepEnabled(step: StepConfig) {
+  return step.enabled !== false
+}

@@ -4,10 +4,12 @@ import gsap from 'gsap'
 import PrimaryButton from './PrimaryButton.vue'
 import SecondaryButton from './SecondaryButton.vue'
 import type { StepButton, StepConfig } from '../lib/steps'
-import { sendEnd, sendEnter, sendStep } from '../api/invite.ts'
+import { sendEnd, sendEnter, sendStep } from '../api/invite'
 
-const { steps } = defineProps<{
+const { steps, slug = '', track = false } = defineProps<{
   steps: StepConfig[]
+  slug?: string
+  track?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -25,9 +27,17 @@ const stepsById = computed(() => new Map(steps.map((step) => [step.step, step]))
 const current = computed(() => stepsById.value.get(currentId.value) ?? steps[0])
 
 watch(
+  () => steps.map((step) => step.step).join('|'),
+  () => {
+    if (!steps.some((step) => step.step === currentId.value)) {
+      currentId.value = steps[0]?.step ?? ''
+    }
+  },
+)
+
+watch(
   () => current.value?.step,
   () => {
-    console.log('current.value?.step', current.value?.step)
     const count = current.value?.buttons?.length ?? 0
     decorateClicks.value = Array.from({ length: count }, () => 0)
     decorateOffsets.value = Array.from({ length: count }, () => ({ x: 0, y: 0 }))
@@ -81,10 +91,12 @@ async function goToStep(nextId: string) {
 
     if (!next.celebrate) return
 
-    try {
-      await sendEnd()
-    } catch (error) {
-      console.error(error)
+    if (track && slug) {
+      try {
+        await sendEnd(slug)
+      } catch (error) {
+        console.error(error)
+      }
     }
 
     emit('celebrate')
@@ -94,7 +106,11 @@ async function goToStep(nextId: string) {
 }
 
 function onButtonClick(button: StepButton, index: number) {
-  sendStep(current.value?.step ?? '', button.text)
+  if (track && slug) {
+    void sendStep(slug, current.value?.step ?? '', buttonLabel(button, index)).catch((error) => {
+      console.error(error)
+    })
+  }
 
   if (button.decorate) {
     decorateClicks.value[index] = (decorateClicks.value[index] ?? 0) + 1
@@ -132,7 +148,13 @@ const animHide = async () => {
 }
 
 onMounted(async () => {
-  await sendEnter()
+  if (track && slug) {
+    try {
+      await sendEnter(slug)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   void animShow()
 })
