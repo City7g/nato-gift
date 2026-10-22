@@ -71,6 +71,19 @@ export async function trackEvent(slug: string, input: VisitEventInput) {
   return data
 }
 
+export function closeVisit(slug: string, input: VisitEventInput) {
+  if (!useHttp) {
+    localApi.addEvent(slug, input)
+    return
+  }
+
+  const body = new Blob([JSON.stringify(input)], { type: 'application/json' })
+  const url = `${import.meta.env.VITE_API_URL}/api/invites/${slug}/events`
+  if (!navigator.sendBeacon(url, body)) {
+    void fetch(url, { method: 'POST', body, keepalive: true })
+  }
+}
+
 export async function listEvents(inviteId: string) {
   if (!useHttp) return localApi.listEvents(getToken(), inviteId)
   const { data } = await http.get<VisitEvent[]>(`/api/invites/${inviteId}/events`)

@@ -19,7 +19,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(to => {
   if (to.meta.auth && !getToken()) {
     return { path: '/studio/login', query: { next: to.fullPath } }
   }

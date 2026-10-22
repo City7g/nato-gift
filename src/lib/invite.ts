@@ -17,7 +17,7 @@ export type InviteDraft = {
   steps: StepConfig[]
 }
 
-export type VisitEventType = 'enter' | 'step' | 'end'
+export type VisitEventType = 'enter' | 'step' | 'end' | 'leave'
 
 export type VisitEvent = {
   id: string

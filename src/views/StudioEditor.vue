@@ -20,6 +20,7 @@ const error = ref('')
 const savedSlug = ref('')
 const pending = ref(false)
 const previewKey = ref(0)
+const openSteps = ref<string[]>([])
 
 const isNew = computed(() => route.params.id === 'new')
 const previewSteps = computed(() => publicSteps(steps.value))
@@ -29,7 +30,18 @@ function applyScript(id: string) {
   const script = scripts.find((item) => item.id === id) ?? scripts[0]
   scriptId.value = script.id
   steps.value = cloneSteps(script.steps)
+  openSteps.value = []
   previewKey.value += 1
+}
+
+function isStepOpen(id: string) {
+  return openSteps.value.includes(id)
+}
+
+function toggleStep(id: string) {
+  openSteps.value = isStepOpen(id)
+    ? openSteps.value.filter((item) => item !== id)
+    : [...openSteps.value, id]
 }
 
 function onScriptChange(id: string) {
@@ -102,6 +114,7 @@ async function load() {
     title.value = invite.title
     theme.value = invite.theme
     steps.value = cloneSteps(invite.steps)
+    openSteps.value = []
     savedSlug.value = invite.slug
     previewKey.value += 1
   } catch (cause) {
@@ -161,7 +174,7 @@ watch(
         <fieldset class="studio-editor__choices">
           <legend>Тема</legend>
           <label v-for="item in themes" :key="item.id" class="studio-editor__choice">
-            <input v-model="theme" type="radio" name="theme" :value="item.id" />
+            <input v-model="theme" class="studio-editor__radio" type="radio" name="theme" :value="item.id" />
             <span>
               <strong>{{ item.title }}</strong>
               <small>{{ item.description }}</small>
@@ -173,6 +186,7 @@ watch(
           <legend>Сценарий</legend>
           <label v-for="item in scripts" :key="item.id" class="studio-editor__choice">
             <input
+              class="studio-editor__radio"
               type="radio"
               name="script"
               :value="item.id"
@@ -189,19 +203,30 @@ watch(
         <ol class="studio-editor__steps">
           <li v-for="(step, index) in steps" :key="step.step" class="studio-editor__step">
             <div class="studio-editor__step-bar">
+              <button
+                type="button"
+                class="studio-editor__toggle"
+                :aria-expanded="isStepOpen(step.step)"
+                @click="toggleStep(step.step)"
+              >
+                <span class="studio-editor__toggle-title">Шаг {{ index + 1 }}</span>
+                <span class="studio-editor__summary">{{ step.text }}</span>
+              </button>
               <label class="studio-editor__enable">
                 <input
+                  class="studio-editor__check"
                   type="checkbox"
+                  aria-label="Шаг включён"
                   :checked="step.enabled !== false"
                   @change="step.enabled = ($event.target as HTMLInputElement).checked; previewKey += 1"
                 />
-                Шаг {{ index + 1 }}
               </label>
               <div class="studio-editor__move">
                 <button type="button" @click="move(index, -1)">Вверх</button>
                 <button type="button" @click="move(index, 1)">Вниз</button>
               </div>
             </div>
+            <div v-if="isStepOpen(step.step)" class="studio-editor__body">
             <label class="studio-editor__field">
               <span>Текст</span>
               <textarea v-model="step.text" class="studio-editor__input" rows="2" />
@@ -230,6 +255,7 @@ watch(
               </label>
               <label class="studio-editor__enable">
                 <input
+                  class="studio-editor__check"
                   type="checkbox"
                   :checked="Boolean(button.decorate)"
                   @change="setDecorate(step, buttonIndex, ($event.target as HTMLInputElement).checked)"
@@ -241,6 +267,7 @@ watch(
               </button>
             </div>
             <button type="button" class="studio-editor__text-button" @click="addButton(step)">Добавить кнопку</button>
+            </div>
           </li>
         </ol>
 
@@ -291,8 +318,9 @@ watch(
 
 .studio-editor__choice {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-start;
+  border: 1px solid transparent;
   padding: 12px;
   border-radius: 12px;
   background: #fff;
@@ -301,6 +329,83 @@ watch(
 .studio-editor__choice small {
   display: block;
   opacity: 0.72;
+}
+
+.studio-editor__choice:has(.studio-editor__radio:checked) {
+  border-color: #ffb3cc;
+  background: #fff7f9;
+}
+
+.studio-editor__radio,
+.studio-editor__check {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  flex: 0 0 22px;
+  border: 2px solid #ffb3cc;
+  background: #fff;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.studio-editor__radio {
+  border-radius: 50%;
+}
+
+.studio-editor__check {
+  border-radius: 7px;
+}
+
+.studio-editor__radio::before,
+.studio-editor__check::before {
+  content: '';
+}
+
+.studio-editor__radio::before {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff4d94;
+  transform: scale(0);
+  transition: transform 0.15s ease;
+}
+
+.studio-editor__radio:checked {
+  border-color: #ff4d94;
+  box-shadow: 0 0 0 4px rgba(255, 77, 148, 0.12);
+}
+
+.studio-editor__radio:checked::before {
+  transform: scale(1);
+}
+
+.studio-editor__check:checked {
+  border-color: #ff4d94;
+  background: linear-gradient(180deg, #ff7eb6 0%, #ff4d94 100%);
+  box-shadow: 0 4px 10px rgba(255, 77, 148, 0.28);
+}
+
+.studio-editor__check:checked::before {
+  width: 6px;
+  height: 10px;
+  margin-top: -2px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.studio-editor__radio:focus-visible,
+.studio-editor__check:focus-visible {
+  outline: 2px solid #ff4d94;
+  outline-offset: 3px;
+}
+
+.studio-editor__radio:hover,
+.studio-editor__check:hover {
+  border-color: #ff4d94;
 }
 
 .studio-editor__steps {
@@ -329,6 +434,40 @@ watch(
   justify-content: space-between;
 }
 
+.studio-editor__toggle {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6a4a55;
+  text-align: left;
+  cursor: pointer;
+}
+
+.studio-editor__toggle-title {
+  font-weight: 700;
+}
+
+.studio-editor__summary {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 15px;
+  opacity: 0.72;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.studio-editor__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .studio-editor__input {
   width: 100%;
   min-height: 42px;
@@ -337,6 +476,17 @@ watch(
   border-radius: 12px;
   background: #fff7f9;
   color: #6a4a55;
+}
+
+select.studio-editor__input {
+  appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-color: #fff7f9;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.2 6.1 8 10.6l4.8-4.5' stroke='%23ff4d94' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px 16px;
 }
 
 .studio-editor__move button,

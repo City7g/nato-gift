@@ -1,10 +1,20 @@
-const SESSION_KEY = 'nato.session'
+let currentId = ''
+let activeSlug = ''
+let cachedDevice = ''
+let closed = false
 
 export function getSessionId() {
-  const existing = sessionStorage.getItem(SESSION_KEY)
-  if (existing) return existing
+  if (!currentId) currentId = crypto.randomUUID()
+  return currentId
+}
 
-  const id = crypto.randomUUID()
-  sessionStorage.setItem(SESSION_KEY, id)
-  return id
+export function rememberVisit(slug: string, device: string) {
+  activeSlug = slug
+  if (device) cachedDevice = device
+}
+
+export function takeLeave() {
+  if (closed || !activeSlug || !currentId) return null
+  closed = true
+  return { slug: activeSlug, sessionId: currentId, device: cachedDevice }
 }
