@@ -38,3 +38,8 @@ select {
 #app {
   padding: 40px;
 }
+
+
+body > iframe {
+  display: none !important;
+}
